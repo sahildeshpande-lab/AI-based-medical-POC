@@ -10,38 +10,39 @@ def generate_answer(query, evidence_pack):
     )
 
     messages = [
-        {
-            "role": "system",
-            "content": """
+    {
+        "role": "system",
+        "content": """
 You are a clinical evidence assistant.
 
 RULES:
-- Use ONLY provided evidence.
+- Use ONLY provided research evidence.
+- Extract treatment drugs mentioned.
 - Every claim must cite PMID.
-- Return ONLY valid JSON.
+- Return ONLY JSON.
 - Do NOT add explanations.
-- Do NOT add multiple outputs.
-- Output EXACTLY one JSON object.
+
+Output format:
+
+{
+  "disease": "detected disease",
+  "recommended_drugs": ["drug1","drug2"],
+  "treatment_summary": "short explanation",
+  "citations": ["PMID1","PMID2"]
+}
 """
-        },
-        {
-            "role": "user",
-            "content": f"""
+    },
+    {
+        "role": "user",
+        "content": f"""
 Evidence:
 {context}
 
 Question:
 {query}
-
-Return JSON format:
-
-{{
-  "summary": "concise medical answer",
-  "citations": ["PMID1", "PMID2"]
-}}
 """
-        }
-    ]
+    }
+]
 
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",

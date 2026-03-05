@@ -18,7 +18,7 @@ def get_pmc_id(pmid):
 
     try:
         links = data["linksets"][0]["linksetdbs"][0]["links"]
-        return links[0]  # PMC ID
+        return links[0]  
     except (KeyError, IndexError):
         return None
 

@@ -8,9 +8,8 @@ def search_pubmed(query, retmax=5):
     Automatically enriches query for treatment-related searches.
     """
 
-    # Auto-enrich query for treatment intent
     if "treat" in query.lower() or "therapy" in query.lower():
-        query = f"({query}) AND (treatment OR therapy OR drug OR management)"
+        query = f"""({query}) AND (humans[MeSH Terms]) AND (english[lang]) AND ("Drug Therapy"[MeSH Terms] OR "Therapeutics"[MeSH Terms])"""
 
     url = f"{PUBMED_BASE}/esearch.fcgi"
 
@@ -20,7 +19,7 @@ def search_pubmed(query, retmax=5):
         "retmode": "json",
         "retmax": retmax,
         "sort": "relevance",
-        "lang": "eng"  # English only
+        "lang": "eng"
     }
 
     try:

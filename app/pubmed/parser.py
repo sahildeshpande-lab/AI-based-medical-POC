@@ -1,7 +1,8 @@
 from lxml import etree
 
-
 def parse_abstracts(xml_data):
+    if not xml_data.strip():
+        raise ValueError("No XML data received from PubMed")
     root = etree.fromstring(xml_data.encode())
     abstracts = []
 
