@@ -1,0 +1,130 @@
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f6f8fb;
+  color: #1f2937;
+}
+
+.container {
+  max-width: 950px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: #2563eb;
+}
+
+.search-box button {
+  padding: 14px 22px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: #1e40af;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.bottom-line ul {
+  padding-left: 20px;
+}
+
+.bottom-line li {
+  margin-bottom: 8px;
+}
+
+.drug-list li {
+  margin-bottom: 6px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table th {
+  background: #eef2ff;
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+table td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.source-links a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.source-links a:hover {
+  text-decoration: underline;
+}
+
+.copy-btn {
+  margin-top: 20px;
+  padding: 12px 18px;
+  background: #059669;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: #047857;
+}
+
+.loading {
+  margin-top: 20px;
+  font-style: italic;
+  color: #6b7280;
+}

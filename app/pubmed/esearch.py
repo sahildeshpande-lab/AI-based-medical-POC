@@ -2,7 +2,7 @@ import requests
 from app.config import PUBMED_BASE
 
 
-def search_pubmed(query, retmax=5):
+def search_pubmed(query, retmax=10):
     """
     Search PubMed and return list of PMIDs.
     Automatically enriches query for treatment-related searches.

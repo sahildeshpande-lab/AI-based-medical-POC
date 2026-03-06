@@ -24,7 +24,6 @@ def generate_answer(query, evidence_pack):
     Generate structured medical answer using Groq LLM
     """
 
-    # Build research context
     context = "\n\n".join(
         [
             f"""
@@ -57,13 +56,9 @@ JSON FORMAT:
 
 {
   "disease": "detected disease",
-
-  "disease_summary": "short WHO-style description including cause, pathogen, and key symptoms",
-
+  "disease_summary": "MANDATORY: short WHO-style description including cause, pathogen, and key symptoms",
   "treatment_summary": "brief summary of treatment based on evidence",
-
   "recommended_drugs": ["drug1","drug2"],
-
   "citations": ["PMID1","PMID2"]
 }
 """
@@ -116,6 +111,16 @@ Return STRICT JSON only.
 
     try:
         parsed = json.loads(json_block)
+
+        parsed.setdefault("disease", "")
+        parsed.setdefault("disease_summary", "")
+        parsed.setdefault("treatment_summary", "")
+        parsed.setdefault("recommended_drugs", [])
+        parsed.setdefault("citations", [])
+
+        if not parsed["disease_summary"] and parsed["disease"]:
+            parsed["disease_summary"] = f"{parsed['disease']} is a medical condition described in the clinical literature. Refer to cited studies for detailed epidemiology, pathogenesis, and treatment guidance."
+
         return parsed
 
     except json.JSONDecodeError as e:
