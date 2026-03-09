@@ -7,3 +7,4 @@ sentence-transformers
 groq
 lxml
 python-dotenv
+httpx
