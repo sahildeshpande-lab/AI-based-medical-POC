@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_URL = "https://medical-api.onrender.com/query"
+API_URL = "http://127.0.0.1:8000/query"
 
 st.set_page_config(
     page_title="PubMed Based Retriever",
