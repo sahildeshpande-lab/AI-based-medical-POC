@@ -5,7 +5,11 @@ from app.config import PUBMED_BASE
 def search_pubmed(query, retmax=10):
     """
     Search PubMed and return list of PMIDs.
-    Automatically enriches query for treatment-related searches.
+
+    The ``retmax`` parameter controls how many results to fetch from the
+    ESearch API (the earlier name ``max_results`` used in this project was
+    incorrect).  The function also applies a small query enrichment when the
+    input mentions treatment keywords to focus on human drug therapy studies.
     """
 
     if "treat" in query.lower() or "therapy" in query.lower():
