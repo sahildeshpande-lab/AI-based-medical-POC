@@ -1,12 +1,16 @@
-faiss-cpu
 fastapi
 groq
 httpx
 lxml
 numpy
 pydantic
-fastapi
 uvicorn
 python-dotenv
-Requests
+requests
 sentence_transformers
+
+# NOTE: the previous version of this project imported faiss-cpu, which
+# brings in a fairly large native library.  That dependency has been
+# removed in favour of a tiny numpy‑only vector store implementation
+# (see app/vectorstore/faiss_store.py) in order to keep the memory
+# footprint small enough to run on a 512 MiB Render instance.

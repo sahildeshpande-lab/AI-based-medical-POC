@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from app.pubmed.esearch import search_pubmed
 from app.pubmed.efetch import fetch_abstracts
 from app.pubmed.parser import parse_abstracts, parse_pmc_fulltext
@@ -15,10 +16,13 @@ from app.validation.dose_fetcher import get_dosage
 
 from app.services.clinical_trials import search_trials, trials_to_evidence
 
+logger = logging.getLogger(__name__)
 
 async def handle_query(query: str):
+    logger.info(f"Processing query: {query}")
 
-    pmids = search_pubmed(query)
+    # Limit PubMed search to reduce memory usage
+    pmids = search_pubmed(query, max_results=5)  # Reduced from default
 
     if not pmids:
         return {"error": "No PubMed results found"}
@@ -35,17 +39,14 @@ async def handle_query(query: str):
 
     all_sections = []
 
-    for article in abstracts:
-
+    for article in abstracts[:3]:  
         pmid = article.get("pmid")
-
         if not pmid:
             continue
 
         all_sections.append(article)
 
         pmc_id = get_pmc_id(pmid)
-
         if pmc_id:
             try:
                 full_xml = fetch_pmc_fulltext(pmc_id)
