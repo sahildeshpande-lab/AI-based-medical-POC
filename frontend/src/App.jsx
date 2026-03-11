@@ -4,16 +4,15 @@ import "./App.css";
 export default function App() {
 
   const [query, setQuery] = useState("");
-  const [data, setData] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [finished, setFinished] = useState(false);
 
   const ask = async () => {
 
     if (!query.trim()) return;
 
     setLoading(true);
-    setFinished(false);
+    const currentQuery = query;
 
     try {
 
@@ -23,7 +22,7 @@ export default function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          query: query
+          query: currentQuery
         })
       });
 
@@ -36,8 +35,15 @@ export default function App() {
 
       const json = await res.json();
 
-      setData(json);
-      setFinished(true);
+      setHistory(prev => [
+        ...prev,
+        {
+          question: currentQuery,
+          data: json
+        }
+      ]);
+
+      setQuery("");
 
     } catch (err) {
       console.error("Network error:", err);
@@ -48,6 +54,7 @@ export default function App() {
 
   return (
     <div className="page">
+
       <div className="navbar">
         <div className="logo">
           PubMed Based Retriever<span className="reg">®</span>
@@ -55,11 +62,15 @@ export default function App() {
 
         <div className="navButtons">
           <button className="shareBtn">Share</button>
-          <button className="newBtn">✎ New Conversation</button>
+          <button
+            className="newBtn"
+            onClick={() => setHistory([])}
+          >
+            ✎ New Conversation
+          </button>
           <div className="menu">☰</div>
         </div>
       </div>
-
 
       <div className="searchArea">
 
@@ -73,52 +84,32 @@ export default function App() {
           autoFocus
         />
 
+        
+
       </div>
 
-      {(loading || finished) && (
-        <div className="responseSection">
+        {loading && (
+                <div className="thinkingCard">
+                  <div className="thinkingHeader">
+                    <span className="spinner"></span>
+                    Thinking...
+                  </div>
+                </div>
+              )}
 
-          {finished && (
-            <div className="searchEcho">
-              {query}
-            </div>
-          )}
+      <div className="responseSection">
 
-          {loading && (
-            <div className="thinkingCard">
+        {history.map((item, idx) => {
 
-              <div className="thinkingHeader">
-                <span className="spinner"></span>
-                Thinking...
+          const data = item.data;
+
+          return (
+            <div key={idx} className="answerContainer">
+              
+
+              <div className="searchEcho">
+                {item.question}
               </div>
-
-              <div className="skeletonLine"></div>
-              <div className="skeletonLine"></div>
-              <div className="skeletonLine short"></div>
-
-            </div>
-          )}
-
-          {finished && !loading && (
-            <div className="finishedThinking">
-
-              <svg
-                className="checkmark"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-
-              Finished thinking
-
-            </div>
-          )}
-
-          {data && (
-            <div className="answerContainer">
 
               <p className="diseaseIntro">
                 A <b>{data.disease}</b> {data.disease_summary}
@@ -133,7 +124,6 @@ export default function App() {
                   <h3 className="sectionTitle">Drugs</h3>
 
                   <div className="drugGrid">
-
                     {data.drugs.map((d, i) => (
                       <div key={i} className="drugCard">
 
@@ -155,17 +145,11 @@ export default function App() {
 
                       </div>
                     ))}
-
                   </div>
                 </>
               )}
-              <div className="actions">
-                <button className="actionBtn">👍 Helpful</button>
-                <button className="actionBtn">👎 Not helpful</button>
-                <button className="actionBtn">📋 Copy</button>
-              </div>
 
-             {data.citations?.length > 0 && (
+              {data.citations?.length > 0 && (
                 <div className="references">
 
                   <h3 className="sectionTitle">
@@ -194,10 +178,13 @@ export default function App() {
               )}
 
             </div>
-          )}
+          );
 
-        </div>
-      )}``
+        })}
+
+
+
+      </div>
 
     </div>
   );

@@ -16,8 +16,6 @@ body {
   padding-bottom: 100px;
 }
 
-/* NAVBAR */
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -88,8 +86,6 @@ body {
   color: #6b7280;
 }
 
-/* SEARCH */
-
 .searchArea {
   display: flex;
   align-items: center;
@@ -122,8 +118,6 @@ body {
   color: #9ca3af;
 }
 
-/* RESPONSE SECTION */
-
 .responseSection {
   margin-top: 20px;
 }
@@ -151,7 +145,6 @@ body {
   color: #10b981;
 }
 
-/* THINKING CARD */
 
 .thinkingCard {
   background: white;
@@ -185,7 +178,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* SKELETON */
 
 .skeletonLine {
   height: 14px;
@@ -204,7 +196,6 @@ body {
   50% { opacity: 0.5; }
 }
 
-/* ANSWER */
 
 .answerContainer {
   background: white;
@@ -248,7 +239,6 @@ body {
   color: #1f2937;
 }
 
-/* DRUG GRID */
 
 .drugGrid {
   display: grid;
@@ -284,7 +274,6 @@ body {
   margin-top: 6px;
 }
 
-/* ACTIONS */
 
 .actions {
   margin-top: 28px;
@@ -310,8 +299,6 @@ body {
   border-color: #9ca3af;
   background: #f9fafb;
 }
-
-/* REFERENCES */
 
 .references {
   margin-top: 32px;
@@ -356,8 +343,6 @@ body {
   text-decoration: underline;
   color: #d45535;
 }
-
-/* FOLLOWUP */
 
 .followup {
   position: fixed;
