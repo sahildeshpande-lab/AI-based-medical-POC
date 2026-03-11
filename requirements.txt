@@ -5,6 +5,8 @@ httpx
 lxml
 numpy
 pydantic
+fastapi
+uvicorn
 python-dotenv
 Requests
 sentence_transformers
