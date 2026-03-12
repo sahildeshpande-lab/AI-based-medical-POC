@@ -1,16 +1,13 @@
 import streamlit as st
-import requests
-
-API_URL = "http://127.0.0.1:8000/query"
+import asyncio
+from app.services.query_service import handle_query
 
 st.set_page_config(
     page_title="PubMed Based Retriever",
     layout="wide"
 )
 
-# session state
-if "history" not in st.session_state:
-    st.session_state.history = []
+st.session_state.history = []
 
 st.title("PubMed Based Retriever®")
 
@@ -20,7 +17,6 @@ with col2:
     if st.button("✎ New Conversation"):
         st.session_state.history = []
 
-# input box
 query = st.text_input(
     "Ask a medical question...",
     placeholder="Ask a medical question..."
@@ -33,43 +29,31 @@ if ask and query.strip():
     with st.spinner("Thinking..."):
 
         try:
-            res = requests.post(
-                API_URL,
-                json={"query": query}
-            )
+            data = asyncio.run(handle_query(query))
 
-            if res.status_code != 200:
-                st.error("API Error")
-            else:
-                data = res.json()
-
-                st.session_state.history.append({
-                    "question": query,
-                    "data": data
-                })
+            st.session_state.history.append({
+                "question": query,
+                "data": data
+            })
 
         except Exception as e:
-            st.error(f"Network error: {e}")
+            st.error(f"Error: {e}")
 
-# render history
+
 for item in st.session_state.history:
 
     data = item["data"]
 
     st.markdown("---")
 
-    # query echo
     st.markdown(f"### 🔎 {item['question']}")
 
-    # disease intro
     st.markdown(
         f"A **{data['disease']}** {data['disease_summary']}"
     )
 
-    # treatment
     st.markdown(data["treatment_summary"])
 
-    # drugs
     if data.get("drugs"):
 
         st.subheader("Drugs")
@@ -90,7 +74,7 @@ for item in st.session_state.history:
                     """
                 )
 
-    # citations
+
     if data.get("citations"):
 
         st.subheader("References")

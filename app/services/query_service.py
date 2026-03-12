@@ -21,8 +21,6 @@ logger = logging.getLogger(__name__)
 async def handle_query(query: str):
     logger.info(f"Processing query: {query}")
 
-    # Limit PubMed search to reduce memory usage; underlying helper uses
-    # ``retmax`` rather than ``max_results``.
     pmids = search_pubmed(query, retmax=5)
     if not pmids:
         return {"error": "No PubMed results found"}
