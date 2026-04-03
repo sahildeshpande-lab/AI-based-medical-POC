@@ -72,7 +72,7 @@ for item in st.session_state.history:
         ]
 
     if drugs:
-        st.subheader("Drugs")
+        st.subheader("Medicines")
 
         cols = st.columns(3)
 
@@ -91,6 +91,7 @@ for item in st.session_state.history:
 
                 if dosage and isinstance(dosage, dict):
                     st.caption(dosage.get("label", ""))
+
 
     citations = data.get("citations", [])
 

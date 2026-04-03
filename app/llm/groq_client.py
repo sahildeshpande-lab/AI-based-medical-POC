@@ -166,5 +166,6 @@ Return ONLY valid JSON.
         "disease_summary": parsed["disease_summary"],
         "treatment_summary": parsed["treatment_summary"],
         "drugs": parsed["drugs"],
+        "recommended_drugs": parsed.get("recommended_drugs", []),
         "citations": parsed["citations"]
     }
