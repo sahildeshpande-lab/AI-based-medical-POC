@@ -8,15 +8,13 @@ client = Groq(api_key=GROQ_API_KEY)
 
 def extract_json(text):
     """
-    Safely extract the first valid JSON object from LLM output
+    Extract first JSON object using regex (more reliable than find/rfind)
     """
-    start = text.find("{")
-    end = text.rfind("}")
-
-    if start == -1 or end == -1:
+    try:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        return match.group(0) if match else None
+    except Exception:
         return None
-
-    return text[start:end + 1]
 
 
 def generate_answer(query, evidence_pack):
@@ -49,8 +47,9 @@ STRICT RULES:
 4. Every treatment claim MUST reference a PMID.
 5. Disease summary should follow WHO-style medical description.
 6. If evidence does not mention drugs, return an empty list.
-7. Output STRICTLY VALID JSON only.
-8. Do NOT add explanations outside JSON.
+7. Output ONLY valid JSON.
+8. Do NOT add any text before or after JSON.
+9. Do NOT include markdown or explanations.
 
 JSON FORMAT:
 
@@ -81,7 +80,7 @@ Tasks:
 4. Extract drug names ONLY if mentioned in the evidence.
 5. Cite the PMID sources used.
 
-Return STRICT JSON only.
+Return ONLY valid JSON.
 """
         }
     ]
@@ -94,17 +93,34 @@ Return STRICT JSON only.
         )
 
         raw_output = response.choices[0].message.content.strip()
+        print("\n===== RAW LLM OUTPUT =====")
+        print(raw_output)
+        print("===== END RAW OUTPUT =====\n")
 
     except Exception as e:
         return {
+            "disease": "",
+            "disease_summary": "",
+            "treatment_summary": "",
+            "drugs": [],
+            "citations": [],
             "error": "Groq API call failed",
             "details": str(e)
         }
 
     json_block = extract_json(raw_output)
 
+    print("\n===== EXTRACTED JSON BLOCK =====")
+    print(json_block)
+    print("===== END JSON BLOCK =====\n")
+
     if not json_block:
         return {
+            "disease": "",
+            "disease_summary": "",
+            "treatment_summary": "",
+            "drugs": [],
+            "citations": [],
             "error": "No JSON found in LLM response",
             "raw_output": raw_output
         }
@@ -112,20 +128,43 @@ Return STRICT JSON only.
     try:
         parsed = json.loads(json_block)
 
-        parsed.setdefault("disease", "")
-        parsed.setdefault("disease_summary", "")
-        parsed.setdefault("treatment_summary", "")
-        parsed.setdefault("recommended_drugs", [])
-        parsed.setdefault("citations", [])
-
-        if not parsed["disease_summary"] and parsed["disease"]:
-            parsed["disease_summary"] = f"{parsed['disease']} is a medical condition described in the clinical literature. Refer to cited studies for detailed epidemiology, pathogenesis, and treatment guidance."
-
-        return parsed
-
     except json.JSONDecodeError as e:
         return {
+            "disease": "",
+            "disease_summary": "",
+            "treatment_summary": "",
+            "drugs": [],
+            "citations": [],
             "error": "Invalid JSON returned by LLM",
             "details": str(e),
             "raw_output": raw_output
         }
+
+    parsed.setdefault("disease", "")
+    parsed.setdefault("disease_summary", "")
+    parsed.setdefault("treatment_summary", "")
+    parsed.setdefault("recommended_drugs", [])
+    parsed.setdefault("citations", [])
+
+    parsed["drugs"] = [
+        {
+            "name": d,
+            "rxnorm": None,
+            "dosage": None
+        }
+        for d in parsed.get("recommended_drugs", [])
+    ]
+
+    if not parsed["disease_summary"] and parsed["disease"]:
+        parsed["disease_summary"] = (
+            f"{parsed['disease']} is a medical condition described in clinical literature. "
+            f"Refer to cited studies for detailed epidemiology, pathogenesis, and treatment guidance."
+        )
+
+    return {
+        "disease": parsed["disease"],
+        "disease_summary": parsed["disease_summary"],
+        "treatment_summary": parsed["treatment_summary"],
+        "drugs": parsed["drugs"],
+        "citations": parsed["citations"]
+    }

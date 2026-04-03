@@ -7,11 +7,13 @@ st.set_page_config(
     layout="wide"
 )
 
-st.session_state.history = []
+
+if "history" not in st.session_state:
+    st.session_state.history = []
 
 st.title("PubMed Based Retriever®")
 
-col1, col2 = st.columns([6,1])
+col1, col2 = st.columns([6, 1])
 
 with col2:
     if st.button("✎ New Conversation"):
@@ -23,6 +25,7 @@ query = st.text_input(
 )
 
 ask = st.button("Ask")
+
 
 if ask and query.strip():
 
@@ -42,47 +45,58 @@ if ask and query.strip():
 
 for item in st.session_state.history:
 
-    data = item["data"]
+    data = item.get("data", {})
 
     st.markdown("---")
+    st.markdown(f"### 🔎 {item.get('question', '')}")
 
-    st.markdown(f"### 🔎 {item['question']}")
+    if data.get("error"):
+        st.error(data.get("error"))
+        if data.get("details"):
+            st.caption(data.get("details"))
+        continue
 
-    st.markdown(
-        f"A **{data['disease']}** {data['disease_summary']}"
-    )
+    disease = data.get("disease", "Unknown condition")
+    disease_summary = data.get("disease_summary", "No summary available.")
+    treatment_summary = data.get("treatment_summary", "No treatment information available.")
 
-    st.markdown(data["treatment_summary"])
+    st.markdown(f"A **{disease}** {disease_summary}")
+    st.markdown(treatment_summary)
 
-    if data.get("drugs"):
+    drugs = data.get("drugs")
 
+    if not drugs and data.get("recommended_drugs"):
+        drugs = [
+            {"name": d, "rxnorm": None, "dosage": None}
+            for d in data.get("recommended_drugs", [])
+        ]
+
+    if drugs:
         st.subheader("Drugs")
 
         cols = st.columns(3)
 
-        for i, drug in enumerate(data["drugs"]):
+        for i, drug in enumerate(drugs):
 
             with cols[i % 3]:
 
-                st.markdown(
-                    f"""
-                    **{drug['name']}**
+                name = drug.get("name", "Unknown drug")
+                rxnorm = drug.get("rxnorm")
+                dosage = drug.get("dosage")
 
-                    {'RxNorm: ' + drug['rxnorm'] if drug.get('rxnorm') else ''}
+                st.markdown(f"**{name}**")
 
-                    {drug['dosage']['label'] if drug.get('dosage') else ''}
-                    """
-                )
+                if rxnorm:
+                    st.caption(f"RxNorm: {rxnorm}")
 
+                if dosage and isinstance(dosage, dict):
+                    st.caption(dosage.get("label", ""))
 
-    if data.get("citations"):
+    citations = data.get("citations", [])
 
+    if citations:
         st.subheader("References")
 
-        for i, c in enumerate(data["citations"]):
-
+        for i, c in enumerate(citations):
             url = f"https://pubmed.ncbi.nlm.nih.gov/{c}"
-
-            st.markdown(
-                f"{i+1}. [PubMed Article {c}]({url})"
-            )
+            st.markdown(f"{i+1}. [PubMed Article {c}]({url})")
