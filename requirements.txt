@@ -8,6 +8,7 @@ uvicorn
 python-dotenv
 requests
 sentence_transformers
+dotenv
 
 hnswlib
 streamlit

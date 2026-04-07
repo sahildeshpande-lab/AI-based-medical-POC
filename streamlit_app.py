@@ -158,7 +158,7 @@ hr {
 
 .stAlert {
     background-color: #1a0f18 !important;
-    border-color: #6b2140 !important;
+    border-color: #6b2140 !important;Advanced app settings
     color: #f87171 !important;
     border-radius: 10px !important;
 }
